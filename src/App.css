@@ -46,8 +46,8 @@ body {
   flex-grow: 1;
   padding-top: 60px;
   /* Space for fixed navbar */
-  padding-bottom: 90px;
-  /* Space for bottom nav on mobile - increased to prevent footer hiding */
+  padding-bottom: 0;
+  /* Removed bottom padding as footer handles the spacing now */
   width: 100%;
 }
 

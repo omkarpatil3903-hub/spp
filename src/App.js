@@ -13,7 +13,7 @@ import { initReactI18next, useTranslation } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      "navbar.brand": "Your Business",
+      "navbar.brand": "Your Politician",
       "nav.home": "Home",
       "nav.aboutUs": "About Us",
       "nav.products": "Products",
@@ -67,7 +67,7 @@ const resources = {
   },
   hi: {
     translation: {
-      "navbar.brand": "आपका व्यवसाय",
+      "navbar.brand": "आपका राजनेता",
       "nav.home": "होम",
       "nav.aboutUs": "हमारे बारे में",
       "nav.products": "उत्पाद",
@@ -121,7 +121,7 @@ const resources = {
   },
   mr: {
     translation: {
-      "navbar.brand": "तुमचा व्यवसाय",
+      "navbar.brand": "तुमचा राजकारणी",
       "nav.home": "मुख्यपृष्ठ",
       "nav.aboutUs": "आमच्याबद्दल",
       "nav.products": "उत्पादने",
@@ -175,7 +175,7 @@ const resources = {
   },
   kn: {
     translation: {
-      "navbar.brand": "ನಿಮ್ಮ ವ್ಯಾಪಾರ",
+      "navbar.brand": "ನಿಮ್ಮ ರಾಜಕಾರಣಿ",
       "nav.home": "ಮುಖಪುಟ",
       "nav.aboutUs": "ನಮ್ಮ ಬಗ್ಗೆ",
       "nav.products": "ಉತ್ಪನ್ನಗಳು",
@@ -846,6 +846,30 @@ function App() {
       setCurrentPage(sectionId);
     }
   };
+
+  // Scroll Spy Effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'aboutUs', 'products', 'specialties', 'bestEmployee', 'images', 'contactUs'];
+      const navbarHeight = 110; // Slightly more than click offset to highlight earlier
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Check if top of section is near the top of the viewport (under navbar)
+          // or if bottom of section is still in view
+          if (rect.top <= navbarHeight && rect.bottom >= navbarHeight) {
+            setCurrentPage(sectionId);
+            break; // Found the current section
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     try {
