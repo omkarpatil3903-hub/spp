@@ -37,20 +37,20 @@ const BestEmployeePage = ({ data, getSafeArray }) => {
                                         }}
                                     />
                                     <h3 className="employee-name text-orange-800">{employee.employeeName}</h3>
-                                    <p className="employee-award text-pink-600">{employee.awardName}</p>
-                                    {employee.date && <p className="employee-date">Awarded on: {employee.date}</p>}
+                                    {/* <p className="employee-award text-pink-600">{employee.awardName}</p>
+                                    {employee.date && <p className="employee-date">Awarded on: {employee.date}</p>} */}
                                 </div>
-                                
-                                
+
+
                             ))
                         ) : (
                             <p className="no-data-message">No best employee awards to display yet.</p>
                         )}
                     </div>
-                     
-                   
 
-                    
+
+
+
                 </div>
             </div>
 

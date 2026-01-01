@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { useParams } from 'react-router-dom';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth'; // Removed getAuth
 import { getDatabase, ref, onValue, push, set } from 'firebase/database'; // Added getDatabase back
@@ -16,30 +17,31 @@ const resources = {
       "navbar.brand": "Your Politician",
       "nav.home": "Home",
       "nav.aboutUs": "About Us",
-      "nav.products": "Products",
-      "nav.specialties": "Specialties",
-      "nav.bestEmployee": " Employee",
+      "nav.products": "News",
+      "nav.productsMobile": "News",
+      "nav.specialties": "Agenda",
+      "nav.bestEmployee": "Team",
       "nav.gallery": "Gallery",
       "nav.contactUs": "Contact Us",
       "home.welcome": "Welcome to {{businessName}}",
       "home.discover": "Discover our services and see what makes us unique.",
-      "home.products": "Our Products",
-      "home.productsText": "Explore our cutting-edge products designed to meet your needs and exceed your expectations.",
-      "home.specialties": "Our Specialties",
-      "home.specialtiesText": "We specialize in delivering top-notch services with unparalleled expertise.",
+      "home.products": "Latest News",
+      "home.productsText": "Stay updated with our latest announcements and initiatives.",
+      "home.specialties": "Our Agenda",
+      "home.specialtiesText": "Committed to serving our community with dedication and vision.",
       "about.title": "About {{businessName}}",
       "about.description": "We are passionate about delivering high-quality solutions and fostering strong relationships with our clients.",
       "about.noTeam": "No team members to display yet.",
-      "products.title": "Our Products",
-      "products.description": "Explore our diverse range of products designed to enhance your experience and provide exceptional value.",
-      "products.noProducts": "No products to display yet.",
-      "products.viewDetails": "View Details",
-      "specialties.title": "Our Specialties",
-      "specialties.description": "We pride ourselves on our core competencies and the specialized services we offer to our clients.",
-      "specialties.noSpecialties": "No specialties to display yet.",
-      "bestEmployee.title": "Meet Our Team",
-      "bestEmployee.description": "We recognize and celebrate the exceptional contributions of our best employees. Their dedication drives our success.",
-      "bestEmployee.noEmployees": "No best employee awards to display yet.",
+      "products.title": "Latest News",
+      "products.description": "Stay informed with our latest updates and announcements.",
+      "products.noProducts": "No news to display yet.",
+      "products.viewDetails": "Read More",
+      "specialties.title": "Our Agenda",
+      "specialties.description": "We are committed to driving progress and serving our community.",
+      "specialties.noSpecialties": "No agenda items to display yet.",
+      "bestEmployee.title": "Our Team",
+      "bestEmployee.description": "Meet the dedicated individuals working towards our shared vision.",
+      "bestEmployee.noEmployees": "No team members to display yet.",
       "gallery.title": "Our Gallery",
       "contact.title": "Contact Us",
       "contact.description": "We'd love to hear from you! Reach out to us through any of the following channels.",
@@ -69,31 +71,32 @@ const resources = {
     translation: {
       "navbar.brand": "आपका राजनेता",
       "nav.home": "होम",
-      "nav.aboutUs": "हमारे बारे में",
-      "nav.products": "उत्पाद",
-      "nav.specialties": "विशेषताएँ",
-      "nav.bestEmployee": "कर्मचारी",
+      "nav.aboutUs": "परिचय",
+      "nav.products": "बातम्या",
+      "nav.productsMobile": "बातम्या",
+      "nav.specialties": "कार्यसूची",
+      "nav.bestEmployee": "टीम",
       "nav.gallery": "गैलरी",
       "nav.contactUs": "संपर्क करें",
       "home.welcome": "{{businessName}} में आपका स्वागत है",
       "home.discover": "हमारी सेवाओं की खोज करें और देखें कि हमें क्या अद्वितीय बनाता है।",
-      "home.products": "हमारे उत्पाद",
-      "home.productsText": "हमारे अत्याधुनिक उत्पादों की खोज करें जो आपकी जरूरतों को पूरा करने और आपकी अपेक्षाओं से अधिक करने के लिए डिज़ाइन किए गए हैं।",
-      "home.specialties": "हमारी विशेषताएँ",
-      "home.specialtiesText": "हम उच्च गुणवत्ता वाली सेवाएँ प्रदान करने में विशेषज्ञ हैं।",
+      "home.products": "ताज़ा बातम्या",
+      "home.productsText": "हमारी नवीनतम घोषणाओं और पहल से अपडेट रहें।",
+      "home.specialties": "हमारी कार्यसूची",
+      "home.specialtiesText": "समर्पण और दृष्टि के साथ हमारे समुदाय की सेवा के लिए प्रतिबद्ध।",
       "about.title": "{{businessName}} के बारे में",
       "about.description": "हम उच्च गुणवत्ता वाले समाधान प्रदान करने और अपने ग्राहकों के साथ मजबूत संबंध बनाने के लिए उत्साहित हैं।",
       "about.noTeam": "अभी कोई टीम सदस्य प्रदर्शित करने के लिए नहीं हैं।",
-      "products.title": "हमारे उत्पाद",
-      "products.description": "हमारे विविध उत्पादों की श्रृंखला की खोज करें जो आपके अनुभव को बढ़ाने और असाधारण मूल्य प्रदान करने के लिए डिज़ाइन किए गए हैं।",
-      "products.noProducts": "अभी कोई उत्पाद प्रदर्शित करने के लिए नहीं हैं।",
-      "products.viewDetails": "विवरण देखें",
-      "specialties.title": "हमारी विशेषताएँ",
-      "specialties.description": "हमें अपनी मुख्य दक्षताओं और हमारे ग्राहकों को दी जाने वाली विशेष सेवाओं पर गर्व है।",
-      "specialties.noSpecialties": "अभी कोई विशेषताएँ प्रदर्शित करने के लिए नहीं हैं।",
-      "bestEmployee.title": "हमारी टीम से मिलें",
-      "bestEmployee.description": "हम अपने सर्वश्रेष्ठ कर्मचारियों के असाधारण योगदान को पहचानते और सम्मन करते हैं। उनकी समर्पण हमारी सफलता को बढ़ाता है।",
-      "bestEmployee.noEmployees": "अभी कोई सर्वश्रेष्ठ कर्मचारी पुरस्कार प्रदर्शित करने के लिए नहीं हैं।",
+      "products.title": "ताज़ा बातम्या",
+      "products.description": "हमारी नवीनतम अपडेट्स और घोषणाओं के बारे में जानकारी प्राप्त करें।",
+      "products.noProducts": "अभी कोई बातम्या प्रदर्शित करने के लिए नहीं हैं।",
+      "products.viewDetails": "और पढ़ें",
+      "specialties.title": "हमारी कार्यसूची",
+      "specialties.description": "हम प्रगति और अपने समुदाय की सेवा के लिए प्रतिबद्ध हैं।",
+      "specialties.noSpecialties": "अभी कोई कार्यसूची आइटम प्रदर्शित करने के लिए नहीं हैं।",
+      "bestEmployee.title": "हमारी टीम",
+      "bestEmployee.description": "हमारी साझी दृष्टि के लिए काम करने वाले समर्पित व्यक्तियों से मिलें।",
+      "bestEmployee.noEmployees": "अभी कोई टीम सदस्य प्रदर्शित करने के लिए नहीं हैं।",
       "gallery.title": "हमारी गैलरी",
       "contact.title": "संपर्क करें",
       "contact.description": "हम आपसे सुनना चाहेंगे! निम्नलिखित किसी भी माध्यम से हमसे संपर्क करें।",
@@ -123,31 +126,32 @@ const resources = {
     translation: {
       "navbar.brand": "तुमचा राजकारणी",
       "nav.home": "मुख्यपृष्ठ",
-      "nav.aboutUs": "आमच्याबद्दल",
-      "nav.products": "उत्पादने",
-      "nav.specialties": "विशेषता",
-      "nav.bestEmployee": "कर्मचारी",
+      "nav.aboutUs": "परिचय",
+      "nav.products": "चालू घडामोडी",
+      "nav.productsMobile": "बातम्या",
+      "nav.specialties": "कार्यसूची",
+      "nav.bestEmployee": "टीम",
       "nav.gallery": "गॅलरी",
       "nav.contactUs": "संपर्क साधा",
       "home.welcome": "{{businessName}} मध्ये आपले स्वागत आहे",
       "home.discover": "आमच्या सेवांचा शोध घ्या आणि आम्हाला काय अद्वितीय बनवते ते पहा.",
-      "home.products": "आमची उत्पादने",
-      "home.productsText": "आमच्या अत्याधुनिक उत्पादनांचा शोध घ्या जे तुमच्या गरजा पूर्ण करण्यासाठी आणि तुमच्या अपेक्षांपेक्षा जास्त करण्यासाठी डिझाइन केले आहेत.",
-      "home.specialties": "आमच्या विशेषता",
-      "home.specialtiesText": "आम्ही उच्च दर्जाच्या सेवा प्रदान करण्यात विशेषज्ञ आहोत.",
+      "home.products": "ताज्या बातम्या",
+      "home.productsText": "आमच्या नवीनतम घोषणा आणि उपक्रमांबद्दल अद्ययावत रहा.",
+      "home.specialties": "आमची कार्यसूची",
+      "home.specialtiesText": "समर्पण आणि दृष्टीकोनासह आमच्या समुदायाची सेवा करण्यास वचनबद्ध.",
       "about.title": "{{businessName}} बद्दल",
       "about.description": "आम्ही उच्च दर्जाचे उपाय प्रदान करण्यासाठी आणि आमच्या ग्राहकांशी मजबूत संबंध निर्माण करण्यासाठी उत्साही आहोत.",
       "about.noTeam": "अद्याप प्रदर्शित करण्यासाठी कोणतेही संघ सदस्य नाहीत.",
-      "products.title": "आमची उत्पादने",
-      "products.description": "आमच्या विविध उत्पादनांच्या श्रेणीचा शोध घ्या जे तुमचा अनुभव वाढवण्यासाठी आणि अपवादात्मक मूल्य प्रदान करण्यासाठी डिझाइन केले आहेत.",
-      "products.noProducts": "अद्याप प्रदर्शित करण्यासाठी कोणतीही उत्पादने नाहीत.",
-      "products.viewDetails": "तपशील पहा",
-      "specialties.title": "आमच्या विशेषता",
-      "specialties.description": "आम्हाला आमच्या मुख्य क्षमता आणि आमच्या ग्राहकांना दिलेल्या विशेष सेवांवर अभिमान आहे.",
-      "specialties.noSpecialties": "अद्याप प्रदर्शित करण्यासाठी कोणत्याही विशेषता नाहीत.",
-      "bestEmployee.title": "आमच्या संघाला भेटा",
-      "bestEmployee.description": "आम्ही आमच्या सर्वोत्तम कर्मचार्‍यांच्या अपवादात्मक योगदानाला ओळखतो आणि सन्मान करतो. त्यांचे समर्पण आमच्या यशाला चालना देते.",
-      "bestEmployee.noEmployees": "अद्याप प्रदर्शित करण्यासाठी कोणतेही सर्वोत्तम कर्मचारी पुरस्कार नाहीत.",
+      "products.title": "चालू घडामोडी",
+      "products.description": "आमच्या नवीनतम अपडेट्स आणि घोषणांबद्दल माहिती मिळवा.",
+      "products.noProducts": "अद्याप प्रदर्शित करण्यासाठी कोणत्याही बातम्या नाहीत.",
+      "products.viewDetails": "अधिक वाचा",
+      "specialties.title": "आमची कार्यसूची",
+      "specialties.description": "आम्ही प्रगती आणि आमच्या समुदायाची सेवा करण्यास वचनबद्ध आहोत.",
+      "specialties.noSpecialties": "अद्याप प्रदर्शित करण्यासाठी कोणत्याही कार्यसूची आयटम नाहीत.",
+      "bestEmployee.title": "आमची टीम",
+      "bestEmployee.description": "आमच्या समान दृष्टीकोनासाठी कार्यरत समर्पित व्यक्तींना भेटा.",
+      "bestEmployee.noEmployees": "अद्याप प्रदर्शित करण्यासाठी कोणतेही टीम सदस्य नाहीत.",
       "gallery.title": "आमची गॅलरी",
       "contact.title": "संपर्क साधा",
       "contact.description": "आम्हाला तुमच्याकडून ऐकायला आवडेल! खालील कोणत्याही माध्यमातून आमच्याशी संपर्क साधा.",
@@ -284,8 +288,9 @@ const getSafeArray = (data, key) => {
 const HomePage = ({ data }) => {
   const { t } = useTranslation();
   const businessInfo = data?.businessInfo;
+  const contactInfo = data?.contacts?.contactInfo;
   const images = getSafeArray(data, 'images');
-  const mainImageUrl = images.length > 0 ? images[0].imageUrl : 'https://placehold.co/1200x400/CCCCCC/333333?text=Main+Image';
+  const mainImageUrl = images.length > 0 ? images[0].imageUrl : 'https://placehold.co/200x200/CCCCCC/333333?text=Profile';
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -296,34 +301,110 @@ const HomePage = ({ data }) => {
   return (
     <div className="page-container bg-gradient-purple-indigo">
       <div className="content-card">
-        {/* Home Section */}
+        {/* Home Section - Politician Profile Card */}
         <div id="home">
-          <h1 className="main-heading text-indigo-800">
-            {t('home.welcome', { businessName: businessInfo?.businessName || 'Our Business' })}
-          </h1>
-          <p className="sub-heading text-gray-700">
-            {t('home.discover', { defaultValue: businessInfo?.AboutBusiness || 'Discover our services and see what makes us unique.' })}
-          </p>
-          <div className="center-wrapper-image">
-            <div className="image-hero-container">
-              <img
-                src={businessInfo?.businessLogo || mainImageUrl}
-                alt="Business Main"
-                className="image-cover hover-scale"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://placehold.co/1200x400/CCCCCC/333333?text=Image+Not+Found';
-                }}
-              />
+          {/* Hero Profile Card */}
+          <div className="profile-hero-card" data-aos="fade-up">
+            <div className="profile-hero-content">
+              {/* Profile Image */}
+              <div className="profile-image-wrapper">
+                <div className="profile-image-circle">
+                  <img
+                    src={businessInfo?.businessLogo || mainImageUrl}
+                    alt={businessInfo?.businessName || 'Profile'}
+                    className="profile-image"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/200x200/CCCCCC/333333?text=Profile';
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Profile Info */}
+              <div className="profile-info">
+                {/* Name Badge */}
+                <div className="profile-name-badge">
+                  <svg className="profile-badge-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                  <span>{businessInfo?.businessName || 'Your Name'}</span>
+                </div>
+
+                {/* Address */}
+                {contactInfo?.address && (
+                  <div className="profile-info-item" data-aos="fade-up" data-aos-delay="100">
+                    <div className="profile-info-icon location">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      </svg>
+                    </div>
+                    <span className="profile-info-text">{contactInfo.address}</span>
+                  </div>
+                )}
+
+                {/* Phone */}
+                {contactInfo?.phone && (
+                  <div className="profile-info-item" data-aos="fade-up" data-aos-delay="200">
+                    <div className="profile-info-icon phone">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                      </svg>
+                    </div>
+                    <a href={`tel:${contactInfo.phone}`} className="profile-info-text profile-link">{contactInfo.phone}</a>
+                  </div>
+                )}
+
+                {/* Email */}
+                {contactInfo?.email && (
+                  <div className="profile-info-item" data-aos="fade-up" data-aos-delay="300">
+                    <div className="profile-info-icon email">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    <a href={`mailto:${contactInfo.email}`} className="profile-info-text profile-link">{contactInfo.email}</a>
+                  </div>
+                )}
+
+                {/* Social Icons */}
+                {(contactInfo?.instagram || contactInfo?.facebook || contactInfo?.youtube || contactInfo?.whatsapp) && (
+                  <div className="profile-social-icons" data-aos="fade-up" data-aos-delay="400">
+                    {contactInfo.instagram && (
+                      <a href={contactInfo.instagram} target="_blank" rel="noopener noreferrer" className="profile-social-icon instagram">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12.315 2c2.43 0 2.792.01 3.24.029 2.863.186 4.464 1.42 5.256 2.21.79.791 2.024 2.393 2.21 5.257.019.447.029.81.029 3.24s-.01 2.793-.029 3.24c-.186 2.863-1.42 4.464-2.21 5.256-.791.79-2.393 2.024-5.257 2.21-.447.019-.81.029-3.24.029s-2.793-.01-3.24-.029c-2.863-.186-4.464-1.42-5.256-2.21-.79-.791-2.024-2.393-2.21-5.257-.019-.447-.029-.81-.029-3.24s.01-2.793.029-3.24c.186-2.863 1.42-4.464 2.21-5.256.791-.79 2.393-2.024 5.257-2.21.447-.019.81-.029 3.24-.029zm0 2.163c-2.899 0-3.21.011-3.657.031-2.613.17-4.14 1.34-4.845 2.046-.705.705-1.876 2.232-2.046 4.845-.02.447-.031.758-.031 3.657s.011 3.21.031 3.657c.17 2.613 1.34 4.14 2.046 4.845.705.705 2.232 1.876 4.845 2.046.447.02.758.031 3.657.031s3.21-.011 3.657-.031c2.613-.17 4.14-1.34 4.845-2.046.705-.705 1.876-2.232 2.046-4.845.02-.447.031-.758.031-3.657s-.011-3.21-.031-3.657c-.17-2.613-1.34-4.14-2.046-4.845-.705-.705-2.232-1.876-4.845-2.046-.447-.02-.758-.031-3.657-.031zM12.315 9.176c1.554 0 2.81 1.256 2.81 2.81s-1.256 2.81-2.81 2.81-2.81-1.256-2.81-2.81 1.256-2.81 2.81-2.81zm0 2.163c-.381 0-.693.312-.693.693s.312.693.693.693.693-.312.693-.693-.312-.693-.693-.693zM16.5 7.404c-.655 0-1.185.53-1.185 1.185s.53 1.185 1.185 1.185 1.185-.53 1.185-1.185-.53-1.185-1.185-1.185z" /></svg>
+                      </a>
+                    )}
+                    {contactInfo.facebook && (
+                      <a href={contactInfo.facebook} target="_blank" rel="noopener noreferrer" className="profile-social-icon facebook">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.776-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33V22C18.343 21.128 22 16.991 22 12z" /></svg>
+                      </a>
+                    )}
+                    {contactInfo.youtube && (
+                      <a href={contactInfo.youtube} target="_blank" rel="noopener noreferrer" className="profile-social-icon youtube">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.812 5.44C19.423 3.523 17.994 2.073 16.074 1.684 14.854 1.342 12 1.342 12 1.342s-2.854 0-4.074.342C5.994 2.073 4.564 3.523 4.176 5.44 3.834 6.66 3.834 9.342 3.834 9.342s0 2.682.342 3.9C4.564 15.462 5.994 16.912 7.914 17.302 9.134 17.644 12 17.644 12 17.644s2.854 0 4.074-.342c1.92-.39 3.349-1.84 3.738-3.758.342-1.218.342-3.9.342-3.9s0-2.682-.342-3.9zm-8.47 8.35v-6.98l6.103 3.49-6.103 3.49z" /></svg>
+                      </a>
+                    )}
+                    {contactInfo.whatsapp && (
+                      <a href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="profile-social-icon whatsapp">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Quick Info Cards */}
           <div className="grid-2-cols gap-8 mt-12" data-aos="fade-up" data-aos-delay="100">
             <div className="card-item bg-gradient-blue-light">
-              <h3 className="card-title text-blue-700" data-aos="fade-up" data-aos-delay="100"><ProductsIcon /> {t('home.products')}</h3>
+              <h3 className="card-title" style={{ color: '#FF9933' }} data-aos="fade-up" data-aos-delay="100"><ProductsIcon /> {t('home.products')}</h3>
               <p className="card-text">{t('home.productsText')}</p>
             </div>
             <div className="card-item bg-gradient-green-light" data-aos="fade-up" data-aos-delay="200">
-              <h3 className="card-title text-green-700" data-aos="fade-up" data-aos-delay="400"><SpecialtiesIcon /> {t('home.specialties')}</h3>
+              <h3 className="card-title" style={{ color: '#0B1C3D' }} data-aos="fade-up" data-aos-delay="400"><SpecialtiesIcon /> {t('home.specialties')}</h3>
               <p className="card-text">{t('home.specialtiesText')}</p>
             </div>
           </div>
@@ -334,24 +415,25 @@ const HomePage = ({ data }) => {
           <AboutUsPage data={data} />
         </div>
 
-        {/* Products Section */}
+        {/* Gallery/Photos Section - Right after About Us */}
+        <div id="images" className="mt-12">
+          <Gallery data={data} />
+        </div>
+
+        {/* Products/News Section */}
         <div id="products" className="mt-12">
           <ProductsPage data={data} />
         </div>
 
-        {/* Specialties Section */}
+        {/* Specialties/Agenda Section - Hidden
         <div id="specialties" className="mt-12">
           <SpecialtiesPage data={data} />
         </div>
+        */}
 
-        {/* Best Employee Section */}
+        {/* Team Section */}
         <div id="bestEmployee" className="mt-12">
           <BestEmployeePage data={data} />
-        </div>
-
-        {/* Gallery Section */}
-        <div id="images" className="mt-12">
-          <Gallery data={data} />
         </div>
 
         {/* Contact Section */}
@@ -403,6 +485,8 @@ const AboutUsPage = ({ data }) => {
 const ProductsPage = ({ data }) => {
   const { t } = useTranslation();
   const products = getSafeArray(data, 'Products');
+  const [selectedImage, setSelectedImage] = useState(null);
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -412,7 +496,7 @@ const ProductsPage = ({ data }) => {
 
   return (
     <div data-aos="fade-up" data-aos-delay="200">
-      <h1 className="main-heading text-red-800">
+      <h1 className="main-heading" style={{ color: '#0B1C3D' }} data-aos="fade-up" data-aos-delay="300">
         {t('products.title')}
       </h1>
       <p className="sub-heading text-gray-700">
@@ -422,21 +506,24 @@ const ProductsPage = ({ data }) => {
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.id} className="product-card bg-gradient-gray-light">
-              <img
-                src={product.imageUrl || 'https://placehold.co/400x300/CCCCCC/333333?text=Product+Image'}
-                alt={product.name}
-                className="w-[250px] h-[250px] object-cover mx-auto hover:scale-105 transition-transform duration-300"
-                onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300/CCCCCC/333333?text=Product+Image'; }}
-              />
+              <div className="image-hover-container" onClick={() => setSelectedImage(product.imageUrl)}>
+                <img
+                  src={product.imageUrl || 'https://placehold.co/400x300/CCCCCC/333333?text=Product+Image'}
+                  alt={product.name}
+                  className="w-[250px] h-[250px] object-cover mx-auto"
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300/CCCCCC/333333?text=Product+Image'; }}
+                />
+                <div className="image-hover-overlay">
+                  <a href={product.imageUrl || '#'} download className="hover-action-btn download" onClick={(e) => e.stopPropagation()}>
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                  </a>
+                  <button className="hover-action-btn share" onClick={(e) => { e.stopPropagation(); navigator.share ? navigator.share({ title: product.name, url: product.imageUrl }) : alert('Share not supported'); }}>
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" /></svg>
+                  </button>
+                </div>
+              </div>
               <div className="product-details">
                 <h3 className="product-name text-gray-800">{product.name}</h3>
-                <p className="product-price text-pink-600">₹{parseFloat(product.price).toFixed(2) || 'N/A'}</p>
-                <p className="product-description text-gray-700">
-                  {product.description || t('products.description')}
-                </p>
-                <button className="product-button bg-pink-500 hover-bg-pink-600">
-                  {t('products.viewDetails')}
-                </button>
               </div>
             </div>
           ))
@@ -444,6 +531,15 @@ const ProductsPage = ({ data }) => {
           <p className="no-data-message">{t('products.noProducts')}</p>
         )}
       </div>
+      {selectedImage && ReactDOM.createPortal(
+        <div className="popup-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Full View" className="popup-image" />
+            <button className="popup-close-button" onClick={() => setSelectedImage(null)}>×</button>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
@@ -461,7 +557,7 @@ const SpecialtiesPage = ({ data }) => {
 
   return (
     <div data-aos="fade-up" data-aos-delay="300" data-aos-once="false" data-aos-mirror="true">
-      <h1 className="main-heading text-lime-800" data-aos-delay="300">
+      <h1 className="main-heading" style={{ color: '#FF9933' }} data-aos-delay="300">
         {t('specialties.title')}
       </h1>
       <p className="sub-heading text-gray-700" data-aos="fade-up" data-aos-delay="300">
@@ -485,10 +581,12 @@ const SpecialtiesPage = ({ data }) => {
   );
 };
 
-// Best Employee Page Component
+// Best Employee/Team Page Component
 const BestEmployeePage = ({ data }) => {
   const { t } = useTranslation();
   const bestEmployees = getSafeArray(data, 'BestEmployee');
+  const [selectedImage, setSelectedImage] = useState(null);
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -498,7 +596,7 @@ const BestEmployeePage = ({ data }) => {
 
   return (
     <div>
-      <h1 className="main-heading text-orange-800" data-aos="fade-up" data-aos-delay="300">
+      <h1 className="main-heading" style={{ color: '#0B1C3D' }} data-aos="fade-up" data-aos-delay="300">
         {t('bestEmployee.title')}
       </h1>
       <p className="sub-heading text-gray-700" data-aos="fade-up" data-aos-delay="300">
@@ -507,22 +605,41 @@ const BestEmployeePage = ({ data }) => {
       <div className="grid-3-cols sm-grid-2-cols" data-aos="fade-up" data-aos-delay="300">
         {bestEmployees.length > 0 ? (
           bestEmployees.map((employee, index) => (
-            <div key={index} className="employee-card bg-gradient-purple-pink">
-              <img
-                src={employee.imageUrl || 'https://placehold.co/180x180/FDD835/616161?text=Employee+Award'}
-                alt={employee.employeeName}
-                className="employee-img"
-                onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/180x180/FDD835/616161?text=Employee+Award'; }}
-              />
-              <h3 className="employee-name text-orange-800">{employee.employeeName}</h3>
-              <p className="employee-award text-pink-600">{employee.awardName}</p>
-              {employee.date && <p className="employee-date">{t('bestEmployee.date', { defaultValue: 'Awarded on: {{date}}', date: employee.date })}</p>}
+            <div key={index} className="product-card bg-gradient-gray-light">
+              <div className="image-hover-container" onClick={() => setSelectedImage(employee.imageUrl)}>
+                <img
+                  src={employee.imageUrl || 'https://placehold.co/400x300/CCCCCC/333333?text=Team+Member'}
+                  alt={employee.employeeName}
+                  className="w-[250px] h-[250px] object-cover mx-auto"
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300/CCCCCC/333333?text=Team+Member'; }}
+                />
+                <div className="image-hover-overlay">
+                  <a href={employee.imageUrl || '#'} download className="hover-action-btn download" onClick={(e) => e.stopPropagation()}>
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                  </a>
+                  <button className="hover-action-btn share" onClick={(e) => { e.stopPropagation(); navigator.share ? navigator.share({ title: employee.employeeName, url: employee.imageUrl }) : alert('Share not supported'); }}>
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div className="product-details">
+                <h3 className="product-name text-gray-800">{employee.employeeName}</h3>
+              </div>
             </div>
           ))
         ) : (
           <p className="no-data-message">{t('bestEmployee.noEmployees')}</p>
         )}
       </div>
+      {selectedImage && ReactDOM.createPortal(
+        <div className="popup-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Full View" className="popup-image" />
+            <button className="popup-close-button" onClick={() => setSelectedImage(null)}>×</button>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
@@ -573,13 +690,14 @@ const Gallery = ({ data }) => {
           <p className="no-data-message">{t('bestEmployee.noEmployees')}</p>
         )}
       </div>
-      {selectedImage && (
+      {selectedImage && ReactDOM.createPortal(
         <div className="popup-overlay" onClick={closePopup}>
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <img src={selectedImage} alt="Full View" className="popup-image" />
             <button className="popup-close-button" onClick={closePopup}>×</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -1007,10 +1125,9 @@ function App() {
           {[
             { key: 'home', icon: <HomeIcon />, label: t('nav.home') },
             { key: 'aboutUs', icon: <AboutUsIcon />, label: t('nav.aboutUs') },
-            { key: 'products', icon: <ProductsIcon />, label: t('nav.products') },
-            { key: 'specialties', icon: <SpecialtiesIcon />, label: t('nav.specialties') },
-            { key: 'bestEmployee', icon: <BestEmployeeIcon />, label: t('nav.bestEmployee') },
             { key: 'images', icon: <GalleryIcon />, label: t('nav.gallery') },
+            { key: 'products', icon: <ProductsIcon />, label: t('nav.products') },
+            { key: 'bestEmployee', icon: <BestEmployeeIcon />, label: t('nav.bestEmployee') },
             { key: 'contactUs', icon: <ContactIcon />, label: t('nav.contactUs') }
           ].map(({ key, icon, label }) => (
             <button
@@ -1036,8 +1153,8 @@ function App() {
         {[
           { key: 'home', icon: <HomeIcon />, label: t('nav.home') },
           { key: 'aboutUs', icon: <AboutUsIcon />, label: t('nav.aboutUs') },
-          { key: 'products', icon: <ProductsIcon />, label: t('nav.products') },
           { key: 'images', icon: <GalleryIcon />, label: t('nav.gallery') },
+          { key: 'products', icon: <ProductsIcon />, label: t('nav.productsMobile') },
           { key: 'contactUs', icon: <ContactIcon />, label: t('nav.contactUs') }
         ].map(({ key, icon, label }) => (
           <button
