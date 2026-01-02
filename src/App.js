@@ -937,7 +937,7 @@ function App() {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState('home');
   const [db, setDb] = useState(null);
-  const [auth, setAuth] = useState(null);
+  const [authInstance, setAuthInstance] = useState(null);
   const [userId, setUserId] = useState(null);
   const [websiteData, setWebsiteData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -993,7 +993,7 @@ function App() {
     try {
       // Use imported instances
       setDb(database);
-      setAuth(auth);
+      setAuthInstance(auth);
 
       const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -1002,14 +1002,16 @@ function App() {
           try {
             const userCredential = await signInAnonymously(auth);
           } catch (e) {
-            setError(t('error.message', { error: `Authentication failed: ${e.message}. Data access may be unaffected due to permissive rules.` }));
-            setLoading(false);
+
+            console.warn(`Authentication failed: ${e.message}. Proceeding with public data access.`);
+            // Suppress error since data is publicly readable
           }
         }
       });
 
       return () => unsubscribeAuth();
     } catch (e) {
+      console.error("Firebase Initialization Error:", e);
       setError(t('error.message', { error: 'Failed to initialize Firebase. Please check your configuration.' }));
       setLoading(false);
     }
